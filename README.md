@@ -13,7 +13,7 @@ This masterclass is a **2-part series** focused on building a strong conceptual 
 
 ## YouTube Playlist for This Course
 
-Git Masterclass Playlist: [https://www.youtube.com/playlist?list=PLmPit9IIdzwSiYCKOtXUGNwytXXiJ8Rv8](https://www.youtube.com/playlist?list=PLmPit9IIdzwSiYCKOtXUGNwytXXiJ8Rv8)
+Git Masterclass Playlist: [https://www.youtube.com/playlist?list=PLmPit9IIdzwT6nq8hIuf7MBcPVzw3cX3K](https://www.youtube.com/playlist?list=PLmPit9IIdzwT6nq8hIuf7MBcPVzw3cX3K)
 
 ---
 
