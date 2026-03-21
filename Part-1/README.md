@@ -1,6 +1,8 @@
-# Git for Developers & DevOps | Part 1 of 2
+# How GIT Works in Production | Part 1 of 2
 
 ## Video reference for this masterclass is the following:
+
+[![Watch the video](https://img.youtube.com/vi/cYoKUTKOLnU/maxresdefault.jpg)](https://www.youtube.com/watch?v=cYoKUTKOLnU)
 
 ---
 
@@ -461,9 +463,10 @@ A **commit** is an **immutable snapshot of your project at a specific point in t
 When your project reaches a meaningful state, such as completing a feature or fixing a bug, you create a commit to permanently preserve that state.
 
 > **Important:** A commit is **immutable and cannot be edited once created**, because it is identified by a content-based hash.
-> If changes are required, Git does **not modify the existing commit**. Instead, it creates a **new commit** or moves branch references (for example using `--amend` or `reset`, we'll see this later in the course).
+> If changes are required, Git does **not modify the existing commit**. Instead, it creates a **new commit** or moves branch references (for example using `--amend` or `reset`, which we will see later in the course).
 > While commits can be removed from branch history, they are **never modified in place**.
-> However, you can still modify the files from any commit in your working directory and record those changes as a **new commit**.
+>
+> However, you can still modify files in your **working directory** (even if they originated from a previous commit) and record those changes as a **new commit**. The original commit remains unchanged, and the new commit represents an updated snapshot of the project.
 
 Commits are not independent entries in a list. Each commit stores a **reference to its parent commit**, creating a chain of commits over time. As development continues, these relationships form a **commit history graph** that represents how the project evolves.
 
@@ -723,6 +726,8 @@ Every time you run `git config`, Git writes the configuration to a file. The sto
 
 * `--file <path>` → Writes configuration directly to the file you specify.
   Stored exactly at the custom path provided.
+
+> In practice, most Git configurations use the `--global` and `--local` scopes. The `--system`, `--worktree`, and `--file` options exist for specific or advanced use cases and are used less frequently.
 
 **Configuration Precedence**
 
