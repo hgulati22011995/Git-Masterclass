@@ -108,6 +108,8 @@ Part 2 of the masterclass will build on these foundations and explore **collabor
 
 ## Why Git?
 
+![Alt text](/images/a1.png)
+
 Modern software evolves continuously. Features are added. Bugs are fixed. Systems are refactored. Teams scale. Release frequency increases. Change is constant.
 
 Without version control, change introduces risk.
@@ -155,6 +157,8 @@ Early centralized version control systems improved traceability but imposed stru
 
 
 ## What Is Git?
+
+![Alt text](/images/a1.png)
 
 Git is a **distributed version control system (DVCS)** designed to track changes in software projects safely and efficiently.
 
@@ -393,6 +397,8 @@ Your terminal prompt will now display the **active Git branch automatically when
 
 # Git Architecture: Core Constructs
 
+![Alt text](/images/b1.png)
+
 Practically, Git workflows revolve around four core constructs. These define how data moves and how history is created.
 
 Although remote repositories are not technically part of Git’s internal architecture, they are included here because real-world engineering workflows almost always involve collaboration and CI/CD integration.
@@ -449,6 +455,8 @@ Think of the staging area as the **blueprint of the next commit**.
 
 
 ## What Is a Commit?
+
+![Alt text](/images/h1.png)
 
 Before moving further, it is essential to understand the commit, because the entire Git architecture revolves around it.
 
@@ -912,6 +920,8 @@ This happens because `.gitignore` itself is a **normal file that should be track
 
 ## Branches in Git
 
+![Alt text](/images/c1.png)
+
 ### Why Create a Branch?
 
 In real-world projects, applications, and microservices, there is always a **primary branch** (commonly named **main, master, trunk, release**, etc.).
@@ -1032,6 +1042,8 @@ We will discuss **what merging means and how it works shortly**.
 ---
 
 ## Visualizing Branches
+
+![Alt text](/images/d1.png)
 
 In our earlier demos, the repository started with a branch called **`master`**, which has historically been the default name used by Git.
 
@@ -1561,6 +1573,8 @@ login.txt
 
 
 ## Git Merge
+
+![Alt text](/images/e1.png)
 
 In Git, development work typically happens on **separate branches**. Once that work is complete and validated, the changes must be **integrated back into the primary branch**.
 
@@ -2319,6 +2333,8 @@ This keeps the repository **clean and easier to navigate**.
 
 ### Step 9: Demonstrate a Merge Conflict
 
+![Alt text](/images/f1.png)
+
 In the previous example we saw a **three-way merge that Git resolved automatically**.
 
 However, Git cannot always reconcile changes automatically. When Git cannot determine how to combine changes from two branches, it raises a **merge conflict** that must be resolved manually.
@@ -2669,6 +2685,8 @@ The repository now uses **`main` as the primary branch**.
 ---
 
 ## Undoing Commits: `git reset` & `git revert`
+
+![Alt text](/images/g1.png)
 
 During development, it is common to realize that a commit was **mistaken, incomplete, or no longer needed**.
 
