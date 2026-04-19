@@ -414,19 +414,15 @@ In real-world environments, the choice between SSH and tokens is influenced less
 #### 1. **Human Access (Developers/DevOps)**
 
 * **Local CLI usage (individual developers)**
-
   * Use **SSH keys** for seamless, password-less authentication
   * Authentication is based on your **private key proving identity** (no login flow)
   * Actions are mapped directly to your **user account on the platform**
-
 * **Enterprise environments (SSO, MFA, policies enforced)**
-
   * Use **HTTPS + tokens** integrated with **IdP (Okta, Azure AD, etc.)**
   * First authenticate via **SSO (interactive login + MFA)**
   * Git operations then use a **token derived from that session**
   * Token represents your **user identity**
   * Enables:
-
     * **User-level auditing**
     * **Centralized access control**
     * **Policy enforcement (MFA, device policies, conditional access)**
@@ -436,17 +432,14 @@ In real-world environments, the choice between SSH and tokens is influenced less
 #### 2. **Non-Human Access (CI/CD, Automation Systems)**
 
 * **Pipelines, scripts, and automation workflows**
-
   * Use **tokens (GitHub Apps / OIDC / short-lived tokens)**
   * Authentication is **non-interactive** (no human login possible)
   * Token represents a **service or workload identity**, not a person
   * Typically:
-
     * Issued **at runtime**
     * Used for a short duration
     * Automatically expires
   * Enables:
-
     * **Fine-grained permissions**
     * **Scalability across systems**
     * **Clear audit trails tied to the workload**
@@ -458,30 +451,20 @@ In real-world environments, the choice between SSH and tokens is influenced less
 #### **Important Practices**
 
 * **Avoid SSH deploy keys for automation at scale**
-
   * Repository-scoped access only
   * **Not tied to a user or centralized identity**
   * Difficult to **audit, rotate, and manage** across systems
   * Suitable only for **simple, isolated use cases**
-
 * **Prefer short-lived credentials wherever possible**
-
   * Avoid long-lived **SSH keys and PATs** where feasible
   * Use **ephemeral tokens (OIDC, GitHub Apps)**
   * Benefits:
-
     * Reduced blast radius if compromised
     * Automatic rotation
     * Alignment with **zero-trust and least-privilege models**
 
 ---
 
-
-## Demo: Working with Remote Repository
-
-In this demo, we will connect our **local Git repository** with a **remote repository on GitHub**, authenticate our machine, and push our local commits to the remote system. This is the first time we move from **local-only workflows to collaborative workflows**.
-
----
 
 ## Step 1: Generate SSH Keys & Connect to GitHub
 
