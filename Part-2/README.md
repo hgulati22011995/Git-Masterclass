@@ -432,6 +432,7 @@ In real-world environments, the choice between SSH and tokens is influenced less
 #### 2. **Non-Human Access (CI/CD, Automation Systems)**
 
 * **Pipelines, scripts, and automation workflows**
+
   * Use **tokens (GitHub Apps / OIDC / short-lived tokens)**
   * Authentication is **non-interactive** (no human login possible)
   * Token represents a **service or workload identity**, not a person
@@ -465,6 +466,11 @@ In real-world environments, the choice between SSH and tokens is influenced less
 
 ---
 
+## Demo: Working with Remote Repository
+
+In this demo, we will connect our **local Git repository** with a **remote repository on GitHub**, authenticate our machine, and push our local commits to the remote system. This is the first time we move from **local-only workflows to collaborative workflows**.
+
+---
 
 ## Step 1: Generate SSH Keys & Connect to GitHub
 
