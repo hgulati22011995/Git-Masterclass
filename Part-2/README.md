@@ -2,6 +2,8 @@
 
 ## Video reference for this masterclass is the following:
 
+[![Watch the video](https://img.youtube.com/vi/JE8EqY1o3pA/maxresdefault.jpg)](https://www.youtube.com/watch?v=JE8EqY1o3pA&ab_channel=CloudWithVarJosh)
+
 ---
 
 ## Table of Contents
@@ -72,6 +74,8 @@ By the end of this part, you will understand not just how Git works, but **how G
 
 
 ## Why Remote?
+
+![Alt text](/images/a2.png)
 
 In **Part 1** of the masterclass, everything we did was limited to our **local environment**. We created commits, worked with branches, merged changes, resolved conflicts, and even learned how to undo mistakes. All of this happened entirely within our **local repository**.
 
@@ -181,6 +185,8 @@ In real-world environments, the choice of platform is usually influenced by:
 
 ## Types of Remote Repositories
 
+![Alt text](/images/b2.png)
+
 Remote repositories are broadly classified based on **access control**, that is, who is allowed to view and modify the code.
 
 There are two primary types of remote repositories:
@@ -246,6 +252,8 @@ Examples include widely used projects such as Kubernetes, Terraform, and many op
 ---
 
 ## Authenticating with Remote
+
+![Alt text](/images/c2.png)
 
 Authentication with a remote repository happens in **two primary contexts**, depending on how you are interacting with the system.
 
@@ -515,14 +523,19 @@ Let us understand the flags:
 ### Add Key to SSH Agent
 
 In the previous step, we generated an SSH key, which is stored as a **private key file on our system**.
-However, SSH does not automatically know **which key to use** for authentication with a remote like GitHub, especially when multiple private keys exist on the same machine.
+However, SSH does not always know **which key to use** for authentication with a remote like GitHub, especially when multiple private keys exist on the same machine.
+
+By default, SSH can:
+
+* use keys from the **SSH agent (memory)**
+* fall back to **default identity files on disk** (e.g., `~/.ssh/id_ed25519`, `id_rsa`)
 
 This creates two practical challenges:
 
-* SSH may not know **which key to use**
+* SSH may try **multiple keys sequentially**, leading to ambiguity
 * Passphrase-protected keys would require **repeated manual entry**
 
-
+---
 
 To solve this, SSH uses a background process called the **SSH agent**, which loads private keys into memory and makes them available to SSH clients during authentication.
 
@@ -561,27 +574,40 @@ The agent has no identities.
 
 ---
 
+### What Actually Happens During Authentication
 
-When you run a command like:
+When you run:
 
-~~~bash
+```bash
 git push
-~~~
+```
 
 Git establishes an SSH connection to:
 
-~~~bash
+```bash
 git@github.com
-~~~
+```
 
 During this process:
 
-1. SSH checks if an **SSH agent** is running
-2. The agent provides all **loaded keys**
-3. The remote checks if any key matches a registered user
-4. If a match is found, authentication succeeds
+1. SSH first checks if an **SSH agent** is running
+2. If present, it tries **keys loaded in the agent**
+3. If needed, it may also try **default identity files from disk**
+4. The server checks if any presented key matches a registered user
+5. If a match is found, authentication succeeds
 
-Without the SSH agent, SSH may fail to use the correct key, especially in multi-key setups.
+> **Important:** SSH does **not send the private key**. It uses it to **sign a challenge**, proving identity.
+
+---
+
+Without the SSH agent:
+
+* authentication can still work
+* but SSH may:
+
+  * prompt repeatedly for passphrase
+  * try multiple keys sequentially
+  * hit server-side limits (too many failed attempts)
 
 ---
 
@@ -604,7 +630,7 @@ However, as soon as you move beyond a single repository or a single account, two
 
 ---
 
-#### **1. Keys are not persistent**
+#### 1. Keys are not persistent
 
 The SSH agent stores keys **only in memory**, not on disk.
 
@@ -614,23 +640,20 @@ This means:
 * all previously loaded keys are removed from memory
 * your private key still exists on disk (`~/.ssh/...`), but is no longer actively used
 
-As a result, even if your repository (e.g.,
-`git@github.com:CloudWithVarJosh/cwvj-git-practice.git`) was working earlier, authentication may fail after a reboot until you manually run:
+As a result, even if your repository was working earlier, authentication may fail after a reboot until you manually run:
 
-~~~bash
+```bash
 ssh-add ~/.ssh/cwvj_github_ed25519
-~~~
-
-This is a usability issue, not a configuration issue, but it becomes repetitive in daily workflows.
+```
 
 ---
 
-#### **2. Multiple keys create ambiguity**
+### 2. Multiple keys create ambiguity
 
 In real-world environments, it is common to have **multiple SSH keys**, for example:
 
 * separate keys for personal and work GitHub accounts
-* different keys across machines (laptop, desktop, server)
+* different keys across machines
 * project-specific or organization-specific keys
 
 A common pattern is:
@@ -639,14 +662,14 @@ A common pattern is:
 
 ---
 
-Now consider two repositories:
+Now consider:
 
-~~~bash
+```bash
 git@github.com:CloudWithVarJosh/cwvj-git-practice.git
 git@github.com:acme-corp/payment-service.git
-~~~
+```
 
-If both accounts are configured on the same machine with different SSH keys, SSH must decide:
+If both accounts are configured on the same machine, SSH must decide:
 
 > **Which private key should be used for this connection?**
 
@@ -654,14 +677,18 @@ If both accounts are configured on the same machine with different SSH keys, SSH
 
 By default, SSH behaves as follows:
 
-> It tries all available keys (from agent or disk) one by one until a match is found
+> It tries keys from the SSH agent first, and may also try default identity files from disk until a match is found
 
-While this works in simple setups, it introduces problems:
+---
 
-* authentication becomes slower (multiple key attempts)
-* behavior becomes unpredictable (depends on key order)
-* multi-account setups may fail if the wrong key is tried first
-* platforms may reject connections after multiple failed attempts
+#### Why this becomes a problem
+
+Even though SSH tries keys sequentially, this introduces real issues:
+
+* authentication becomes slower (multiple attempts)
+* order of keys affects behavior (agent order + default identities)
+* servers may reject connections after too many failed attempts
+* debugging becomes difficult in multi-account setups
 
 ---
 
@@ -671,85 +698,62 @@ What we want instead is:
 
 ---
 
-### Solution: SSH Configuration
+> **Note:**
+> By default, SSH may try multiple keys (agent + default files), which can cause ambiguity.
+> Using `IdentitiesOnly yes` ensures only explicitly configured keys are used.
 
-To address both persistence and ambiguity, we use the SSH configuration file:
+---
 
-~~~bash
+#### Solution: SSH Configuration
+
+To address both persistence and ambiguity, we use:
+
+```bash
 ~/.ssh/config
-~~~
+```
 
-This file allows us to define **explicit rules for how SSH selects and uses keys** when connecting to different hosts.
+This file allows us to define **explicit rules for how SSH selects keys**.
 
 ---
 
-Before writing the configuration, it is important to understand:
+Before writing config:
 
-~~~bash
+```bash
 git@github.com
-~~~
+```
 
-* **`github.com`** → remote Git server (host)
-* **`git`** → system user used for Git over SSH
+* `github.com` → remote host
+* `git` → SSH user (not your GitHub username)
 
-This is **not your GitHub username**.
-Your identity is determined entirely by the **SSH key presented during authentication**.
-
----
-
-### What SSH Config Solves
-
-SSH configuration introduces **determinism and automation** into the process:
-
-* **Key selection** → ensures the correct key is used for each host
-* **Reduced ambiguity** → avoids trial-and-error key matching
-* **Usability improvements** → can automatically load keys into the agent
-
-> SSH config does not persist keys in memory, but ensures the **correct key is selected and loaded when needed**
+Your identity is determined by the **SSH key presented**, not the username.
 
 ---
 
-### Example: Single Account Setup
+#### What SSH Config Solves
 
-~~~bash
+* **Key selection** → correct key always used
+* **Reduced ambiguity** → no trial-and-error
+* **Better UX** → optional auto-loading into agent
+
+> SSH config does not persist keys, but ensures **correct key selection**
+
+---
+
+#### Example: Single Account Setup
+
+```bash
 Host github.com
   HostName github.com
   User git
   IdentityFile ~/.ssh/cwvj_github_ed25519
   AddKeysToAgent yes
-~~~
-
-Now, when you interact with:
-
-~~~bash
-git@github.com:CloudWithVarJosh/cwvj-git-practice.git
-~~~
-
-SSH will:
-
-* always use `cwvj_github_ed25519`
-* automatically add the key to the agent if not already loaded
-* avoid manual `ssh-add` in most cases
+```
 
 ---
 
-### Example: Multiple Accounts (Real-World Scenario)
+#### Example: Multiple Accounts
 
-Assume:
-
-* Personal repo → `git@github.com:CloudWithVarJosh/cwvj-git-practice.git`
-* Work repo → `git@github.com:acme-corp/payment-service.git`
-
-And two keys:
-
-* `~/.ssh/personal_ed25519`
-* `~/.ssh/work_ed25519`
-
----
-
-We define logical hosts:
-
-~~~bash
+```bash
 Host github-personal
   HostName github.com
   User git
@@ -759,64 +763,19 @@ Host github-work
   HostName github.com
   User git
   IdentityFile ~/.ssh/work_ed25519
-~~~
+```
 
 ---
 
-Now update repository remotes:
+Update remotes:
 
-~~~bash
+```bash
 git@github-personal:CloudWithVarJosh/cwvj-git-practice.git
 git@github-work:acme-corp/payment-service.git
-~~~
+```
 
-This ensures:
 
-* the correct key is always selected based on the host
-* authentication is deterministic and predictable
-* no conflicts between personal and work accounts
-* no dependency on key ordering or trial-and-error
-
----
-
-> **Key Insight:**
-> SSH keys establish **identity**, Git platforms determine **permissions**, and SSH configuration ensures the **correct identity is used consistently for each connection**.
-
----
-
-### Copy Public Key
-
-~~~bash
-cat ~/.ssh/cwvj_github_ed25519.pub
-~~~
-
-Copy the output.
-
----
-
-#### Add Key to GitHub
-
-Go to:
-
-GitHub → Profile → Settings → **SSH and GPG Keys** → New SSH Key
-
-Provide:
-
-* Title → name of your machine
-* Key → paste the public key
-* Type → Authentication Key
-
----
-
-#### Verify Connection
-
-~~~bash
-ssh -T git@github.com
-~~~
-
-If successful, GitHub will confirm authentication.
-
-At this point, your machine is trusted and ready to securely interact with GitHub.
+> SSH keys establish **identity**, Git platforms enforce **authorization**, and SSH config ensures the **correct identity is used consistently**.
 
 ---
 
@@ -1374,6 +1333,8 @@ You should no longer see:
 
 ## Understanding `git fetch` and `git pull`
 
+![Alt text](/images/d2.png)
+
 So far, we have only pushed changes from our local repository to the remote. In a real-world setup, this flow is not one-directional. Other developers will also be pushing changes, which means your local repository can become **out of sync with the remote**.
 
 To handle this, Git provides the `git fetch` command.
@@ -1640,6 +1601,11 @@ In simple terms: **What exactly changed?**
 
 > Mental model: `git diff` shows what will change, before you apply it.
 
+> **Mental hack:** Think of `git diff` in four areas: working directory → staging area → commit (HEAD) → remote.
+> Use `git diff` for working vs staging, `git diff --staged` for staging vs commit, `git diff HEAD` for working vs commit, and `git diff HEAD origin/main` for your current branch vs remote-tracking branch.
+> Move left → right across states to compare changes between any two points.
+
+
 
 ---
 
@@ -1762,6 +1728,8 @@ git branch -D demo/diff
 
 ## Pull Requests and Code Review
 
+![Alt text](/images/e2.png)
+
 So far, we have seen how multiple developers can **work on the same repository, push changes, and stay in sync** using `push`, `fetch`, and `pull`. However, this model assumes that developers are directly pushing changes to shared branches like `main`.
 
 In real-world systems, this is almost never allowed.
@@ -1852,6 +1820,8 @@ Even in systems with strong automation, a manual approval step is often retained
 ---
 
 ### Pull Request Workflow in Production
+
+![Alt text](/images/f2.png)
 
 A typical production workflow follows a structured sequence where changes are introduced in a controlled manner. The diagram above visually represents this end-to-end flow.
 
@@ -2243,6 +2213,8 @@ Delete the repository from GitHub:
 ---
 
 ## Git Stash
+
+![Alt text](/images/g2.png)
 
 ### Why Git Stash
 
