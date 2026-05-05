@@ -59,7 +59,6 @@
     - [Step 7: Resolve conflict](#step-7-resolve-conflict)  
     - [Step 8: Final state](#step-8-final-state)  
 - [Git Integration & History Strategies: Revision](#git-integration--history-strategies-revision)  
-
 - [Conclusion](#conclusion)  
 - [References](#references)  
 
