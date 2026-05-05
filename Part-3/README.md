@@ -2,6 +2,7 @@
 
 ## Video reference for this masterclass is the following:
 
+[![Watch the video](https://img.youtube.com/vi/AKxKPH08-7A/maxresdefault.jpg)](https://www.youtube.com/watch?v=AKxKPH08-7A&ab_channel=CloudWithVarJosh)
 
 ---
 
@@ -58,6 +59,7 @@
     - [Step 7: Resolve conflict](#step-7-resolve-conflict)  
     - [Step 8: Final state](#step-8-final-state)  
 - [Git Integration & History Strategies: Revision](#git-integration--history-strategies-revision)  
+
 - [Conclusion](#conclusion)  
 - [References](#references)  
 
@@ -211,6 +213,8 @@ Over time, the issue is not correctness of history, but **cognitive load**. The 
 
 
 ### What is Rebasing
+
+![Alt text](/images/a3.png)
 
 Let’s say you created a branch `feature/login` (this could be a feature, bugfix, or hotfix branch) from `main` (this could be any primary branch such as `main`, `production`, `release`, etc.).
 
@@ -844,6 +848,8 @@ In practice, your goal is to keep your work **aligned with the latest state of `
 
 ## Interactive Rebase: Concept and Intent
 
+![Alt text](/images/b3.png)
+
 In the previous section on rebase, we saw that when we run:
 
 ```bash id="h3k91a"
@@ -1357,6 +1363,8 @@ The merge performed via PR will typically result in:
 > In this section, **“squash merge” refers to the platform-level integration strategy** used during PR merge.
 > This distinction is intentional to avoid confusion with the `squash` operation used in **interactive rebase**, which is a **local history rewrite**.
 
+![Alt text](/images/c3.png)
+
 In the previous section, we worked with **interactive rebase**, which can be used in two ways:
 
 * `git rebase -i main`: align with another branch while reshaping commits during replay
@@ -1733,6 +1741,8 @@ Delete the repository from GitHub (demo cleanup):
 ---
 
 ## Cherry-pick: Concept and Intent
+
+![Alt text](/images/d3.png)
 
 What we have seen so far is the integration of an **entire branch into another branch**. We explored both **merge** and **rebase**, which are used to bring changes from one branch into another.
 
